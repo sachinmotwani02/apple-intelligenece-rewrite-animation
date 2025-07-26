@@ -1,4 +1,5 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import './AppleNotesAnimation.css';
 import { textVariants } from '../lib/constants';
 import { createRippleEffect, createRevealEffect } from '../lib/animation';
@@ -10,6 +11,11 @@ const AppleNotesAnimation = () => {
     const [disableTransition, setDisableTransition] = useState(false);
     const [textLines, setTextLines] = useState(textVariants.original);
     const [animationState, setAnimationState] = useState('');
+    const [newTextLines, setNewTextLines] = useState([]);
+    const [lineAnimationControls, setLineAnimationControls] = useState([]);
+    
+    // Create animation controls for up to 10 lines (should cover most cases)
+    const animationControls = Array.from({ length: 10 }, () => useAnimation());
 
     const containerRef = useRef(null);
     const textContainerRef = useRef(null);
@@ -29,21 +35,29 @@ const AppleNotesAnimation = () => {
         
         setDisableTransition(true);
 
-        requestAnimationFrame(() => {
-            if (finalContentRef.current) finalContentRef.current.innerHTML = '';
-            container.style.transition = '';
-    
-            if (wipePathRef.current) wipePathRef.current.setAttribute('d', 'M 0,0 H 0 V 0 A 1,1 0 0,0 0,0 Z');
-            if (hideWipePathRef.current) hideWipePathRef.current.setAttribute('d', 'M 0,0 H 0 V 0 A 1,1 0 0,0 0,0 Z');
-            if (colorBandRef.current) colorBandRef.current.style.transform = 'translateY(-100%)';
-            
-            setAnimationState('');
-            setIsFinishing(false);
-
+        // Wait for spring animations to complete before resetting
+        // Spring animations: max delay (9 lines * 0.02 * 450) + down animation (0.08s) + spring back (~0.4s) = ~0.7s
+        setTimeout(() => {
             requestAnimationFrame(() => {
-                setDisableTransition(false);
+                container.style.transition = '';
+        
+                if (wipePathRef.current) wipePathRef.current.setAttribute('d', 'M 0,0 H 0 V 0 A 1,1 0 0,0 0,0 Z');
+                if (hideWipePathRef.current) hideWipePathRef.current.setAttribute('d', 'M 0,0 H 0 V 0 A 1,1 0 0,0 0,0 Z');
+                if (colorBandRef.current) colorBandRef.current.style.transform = 'translateY(-100%)';
+                
+                // Reset animation controls after all springs complete
+                animationControls.forEach(control => control.set({ y: 0 }));
+                
+                setAnimationState('');
+                setIsFinishing(false);
+                setNewTextLines([]);
+                setLineAnimationControls([]);
+
+                requestAnimationFrame(() => {
+                    setDisableTransition(false);
+                });
             });
-        });
+        }, 2000); // Wait 800ms for all spring animations to complete
     }, [isFinishing]);
 
     const getContainerHeight = (texts) => {
@@ -79,6 +93,11 @@ const AppleNotesAnimation = () => {
         const container = textContainerRef.current;
         const newTexts = textVariants[variant];
 
+        // Set up new text lines and animation controls
+        setNewTextLines(newTexts);
+        const controls = animationControls.slice(0, newTexts.length);
+        setLineAnimationControls(controls);
+
         const currentTextLines = Array.from(textContentRef.current.querySelectorAll('.text-line'));
         const blurContent = blurContentRef.current;
         const newBlurHtml = currentTextLines.map(line => `<span class="text-overlay-line">${line.textContent}</span>`).join('');
@@ -88,10 +107,6 @@ const AppleNotesAnimation = () => {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         await createRippleEffect(arcPathRef, container.offsetHeight, container.offsetWidth);
-
-        const finalContent = finalContentRef.current;
-        const newHtml = newTexts.map(text => `<span class="text-overlay-line">${text}</span>`).join('');
-        finalContent.innerHTML = newHtml;
 
         const newHeight = getContainerHeight(newTexts);
 
@@ -109,6 +124,7 @@ const AppleNotesAnimation = () => {
             colorBandRef,
             textContentRef,
             finalContentRef,
+            lineAnimationControls: controls,
         });
 
         setTextLines(newTexts);
@@ -127,7 +143,10 @@ const AppleNotesAnimation = () => {
         setCurrentVariant('original');
         setDisableTransition(true);
 
-        if(finalContentRef.current) finalContentRef.current.innerHTML = '';
+        // Clear the new text lines and reset animations
+        setNewTextLines([]);
+        setLineAnimationControls([]);
+        animationControls.forEach(control => control.set({ y: 0 }));
 
         const blurContent = blurContentRef.current;
         if (blurContent) {
@@ -192,7 +211,18 @@ const AppleNotesAnimation = () => {
                         <div className="text-overlay-content" ref={blurContentRef} id="blurContent"></div>
                     </div>
                     <div className="text-overlay" id="revealOverlay">
-                        <div className="text-overlay-content" ref={finalContentRef} id="finalContent"></div>
+                        <div className="text-overlay-content" ref={finalContentRef} id="finalContent">
+                            {newTextLines.map((line, index) => (
+                                <motion.span
+                                    key={`${currentVariant}-${index}`}
+                                    className="text-overlay-line"
+                                    initial={{ y: 0 }}
+                                    animate={lineAnimationControls[index] || animationControls[index]}
+                                >
+                                    {line}
+                                </motion.span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

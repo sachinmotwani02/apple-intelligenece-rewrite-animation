@@ -36,7 +36,7 @@ const AppleNotesAnimation = () => {
         setDisableTransition(true);
 
         // Wait for spring animations to complete before resetting
-        // Spring animations: max delay (9 lines * 0.02 * 450) + down animation (0.08s) + spring back (~0.4s) = ~0.7s
+        // New calculation: max delay (9 lines * 0.04 * 600) + spring duration (~2s with low stiffness) = ~2.2s
         setTimeout(() => {
             requestAnimationFrame(() => {
                 container.style.transition = '';
@@ -57,7 +57,7 @@ const AppleNotesAnimation = () => {
                     setDisableTransition(false);
                 });
             });
-        }, 2000); // Wait 800ms for all spring animations to complete
+        }, 1000); // Wait 3000ms for optimized spring animations to complete
     }, [isFinishing]);
 
     const getContainerHeight = (texts) => {

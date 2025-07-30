@@ -36,8 +36,7 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
+            background: #fff;
             border-radius: 20px;
             padding: 0;
             height: 80vh;
@@ -85,6 +84,7 @@
             border-radius: 12px;
             margin-bottom: 30px;
             overflow: hidden;
+            background: #fff;
         }
 
         .text-content {
@@ -98,18 +98,11 @@
             line-height: 1.6;
             margin-bottom: 8px;
             transition: color 0.3s ease, transform 0.3s ease;
+            color: #1d1d1f;
         }
 
         .text-container.no-transition .text-line {
             transition: transform 0.3s ease;
-        }
-
-        .text-container.variant-original .text-line {
-            color: #8a8a8a;
-        }
-
-        .text-container:not(.variant-original) .text-line {
-            color: #1d1d1f;
         }
 
         .text-container.rewriting .text-line {
@@ -175,7 +168,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 80px; /* Thickness of the color band */
+            height: 120px; /* Thickness of the color band */
             background: linear-gradient(90deg, 
                 #FF1B6B, /* Reddish-pink primary */
                 #FF6B9D, /* Pink */

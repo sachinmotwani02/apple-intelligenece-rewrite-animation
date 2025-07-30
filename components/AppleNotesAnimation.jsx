@@ -9,7 +9,7 @@ const AppleNotesAnimation = () => {
     const [isRewriting, setIsRewriting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [disableTransition, setDisableTransition] = useState(false);
-    const [textLines, setTextLines] = useState(textVariants.original);
+    const [textLines, setTextLines] = useState(textVariants.original.split('\n'));
     const [animationState, setAnimationState] = useState('');
     const [newTextLines, setNewTextLines] = useState([]);
     const [lineAnimationControls, setLineAnimationControls] = useState([]);
@@ -18,8 +18,8 @@ const AppleNotesAnimation = () => {
     const styleSequence = ['professional', 'casual', 'creative'];
     const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
     
-    // Create animation controls for up to 10 lines (should cover most cases)
-    const animationControls = Array.from({ length: 10 }, () => useAnimation());
+    // Create animation controls for up to 20 lines (should cover most cases)
+    const animationControls = Array.from({ length: 20 }, () => useAnimation());
 
     const containerRef = useRef(null);
     const textContainerRef = useRef(null);
@@ -64,7 +64,7 @@ const AppleNotesAnimation = () => {
         setTimeout(() => setIsLoading(true), 400);
 
         const container = textContainerRef.current;
-        const newTexts = textVariants[variant];
+        const newTexts = textVariants[variant].split('\n');
 
         // Set up new text lines and animation controls
         setNewTextLines(newTexts);
@@ -145,7 +145,7 @@ const AppleNotesAnimation = () => {
         if (isRewriting) return;
 
         const container = textContainerRef.current;
-        const originalTexts = textVariants.original;
+        const originalTexts = textVariants.original.split('\n');
         
         setTextLines(originalTexts);
         setCurrentVariant('original');
@@ -253,4 +253,4 @@ const AppleNotesAnimation = () => {
   );
 };
 
-export default AppleNotesAnimation; 
+export default AppleNotesAnimation;

@@ -172,10 +172,7 @@
             background: linear-gradient(90deg, 
                 #FF1B6B, /* Reddish-pink primary */
                 #FF6B9D, /* Pink */
-                #C471ED, /* Purple */
-                #12B6FF, /* Blue */
-                #00D4FF, /* Cyan */
-                #FFB800  /* Orange/Yellow */
+                #C471ED /* Purple */
             );
             filter: blur(25px);
             opacity: 0.8;
@@ -355,4 +352,4 @@
         padding: 10px 20px;
         font-size: 14px;
     }
-} 
+}

@@ -1,5 +1,9 @@
 # Apple Intelligence Rewrite Animation
 
+
+https://github.com/user-attachments/assets/06ed1629-b055-4fef-986c-5d9ca5ea284d
+
+
 This project is a recreation of the text rewriting animation featured in Apple Intelligence, built using Next.js and Framer Motion.
 
 ## Features
